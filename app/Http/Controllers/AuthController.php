@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -49,6 +51,16 @@ class AuthController extends Controller
             'password' => $data['password'],
             'role' => User::ROLE_USER
         ]);
+
+        if ($user) {
+            // use App\Mail\WelcomeMail;
+            // use Illuminate\Support\Facades\Mail;
+            // Mail::to($user->email)->send(new WelcomeMail($user));
+
+            // Nếu sử sử dụng queue ta cần chạy song song 2 câu lệnh
+            // php artisan ser và php artisan queue:work
+            Mail::to($user->email)->queue(new WelcomeMail($user));
+        }
 
         Auth::login($user);
 
